@@ -1,0 +1,378 @@
+%-*-coding:utf-8-*-
+\documentclass[13pt]{beamer}
+
+\mode<presentation>
+{
+\usetheme{Warsaw}
+
+\setbeamercovered{transparent}
+}
+
+\usepackage[UTF8]{ctex} % 支持中文
+%\usepackage[encoding=UTF8]{zhnumber} % 中文日期
+\usepackage[english]{babel} %选择语言
+%\usepackage[latin1]{inputenc}
+
+% font definitions, try \usepackage{ae} instead of the following
+% three lines if you don't like this look
+\usepackage{mathptmx}
+\usepackage[scaled=.90]{helvet}
+\usepackage{courier}
+
+\usepackage[T1]{fontenc}
+
+\usepackage[utf8]{inputenc}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+% Custom colors
+\usepackage{color}
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+\usepackage{listings}
+
+% Python style for highlighting
+\newcommand\pythonstyle{\lstset{
+language=Python,
+basicstyle=\ttm,
+otherkeywords={self},             % Add keywords here
+keywordstyle=\ttb\color{deepblue},
+emph={MyClass,__init__},          % Custom highlighting
+emphstyle=\ttb\color{deepred},    % Custom highlighting style
+stringstyle=\color{deepgreen},
+frame=tb,                         % Any extra options here
+showstringspaces=false            % 
+}}
+
+
+% Python environment
+\lstnewenvironment{python}[1][]
+{
+\pythonstyle
+\lstset{#1}
+}
+{}
+
+% Python for external files
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
+
+% Python for inline
+\newcommand\pythoninline[1]{{\pythonstyle\lstinline!#1!}}
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSubsection[]
+{
+\begin{frame}<beamer>
+\frametitle{目录}
+\tableofcontents[currentsection,currentsubsection]
+\end{frame}
+}
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command:
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\begin{document}
+
+
+\title{Python文件操作}
+
+%\subtitle{}
+
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+%\author{F.~Author\inst{1} \and S.~Another\inst{2}}
+\author{张果}
+
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+\institute[Universities of]
+{
+厦门大学\quad 王亚南经济研究院}
+
+%\ctexset{today=small} %中文日期
+\renewcommand{\today}{\number\year 年 \number\month 月 \number\day 日}
+\date{\today}
+
+
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+\subject{Talks}
+
+
+
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{目录}
+\tableofcontents
+% You might wish to add the option [pausesections]
+\end{frame}
+
+
+\begin{frame}
+\frametitle{相关模块}
+\begin{itemize}
+  \item<1-> os:文件系统的访问
+  \item<2-> os.path:管理和操作路径名
+\end{itemize}
+
+\end{frame}
+
+\section{os模块}
+
+\begin{frame}
+\frametitle{文件处理}
+\begin{itemize}
+  \item<1-> os.remove(fname)  \# 删除文件
+  \item<2-> os.rename(oldname,newname)  \# 重命名/移动文件
+  \item<3-> os.walk(path) \# 生成一个目录树下所有文件
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{目录、文件夹}
+\begin{itemize}
+  \item<1-> os.chdir(path)  \# 改变当前工作目录
+  \item<2-> os.listdir(path)  \# 列出指定目录的文件名
+  \item<3-> os.getcwd() \# 返回当前工作目录
+  \item<4-> os.mkdir(path) \# 创建目录
+\end{itemize}
+\end{frame}
+
+\section{os.path模块}
+\begin{frame}
+\frametitle{分隔}
+\begin{itemize}
+  \item<1-> os.path.basename(fname) \# 去掉目录路径，返回文件名
+  \item<2-> os.path.dirname(fname)  \# 去掉文件名，返回目录路径
+  \item<3-> os.path.join(dirname,basename) \# 组合目录名和文件名
+  \item<4-> os.path.split(fname) \# 拆分目录名和文件名
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{信息}
+\begin{itemize}
+  \item<1-> os.path.exists(path or fname) \# 指定路径（文件or目录）
+  \item<2-> os.path.isfile(fname)  指定路径是否存在且为一个文件
+  \item<3-> os.path.isdir(dirname)  指定路径是否存在且为一个目录
+\end{itemize}
+\end{frame}
+
+\section{一些实例}
+\begin{frame}
+\frametitle{批量集中文件}
+\begin{itemize}
+  \item<1-> 目标：把一个文件树下全部文件集中到首级文件夹下。
+  \item<2-> 思路：
+  \pause
+  \begin{itemize}
+    \item 遍历文件树：os.walk
+    \pause
+    \item 把文件树下每一个文件移动到首级文件夹：for;os.rename
+   \end{itemize}
+  \item<3-> 实例：sortdata.py
+  \item<4-> 拓展：
+  \pause
+  \begin{itemize}
+    \item 按拓展名分类文件：if;in
+    \pause
+    \item 移动到特定文件夹
+  \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{批量分类文件}
+  \begin{itemize}
+  \item<1-> 目标：把一个文件夹中的文件分成若干500个文件的文件夹。
+  \item<2-> 思路：
+  \pause
+  \begin{itemize}
+    \item 遍历文件夹下所有文件：for;os.listdir
+    \pause
+    \item 创建新文件夹：if;os.path.exists;os.mkdir
+    \pause
+    \item 把文件移动到新文件夹下：os.path.join;os.rename
+  \end{itemize}
+  \item<3-> 实例：divpdf.py
+  \item<4-> 拓展：
+  \pause
+  \begin{itemize}
+    \item 按拓展名分类文件：if;in
+    \pause
+    \item 移动到特定文件夹：if;in
+  \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{批量筛选不需要的PDF}
+  \begin{itemize}
+  \item<1-> 目标：把英文、已取消、补充公告的财报PDF取出。
+  \item<2-> 思路：
+  \pause
+  \begin{itemize}
+    \item 创建新文件夹：if;os.path.exists;os.mkdir
+    \pause
+    \item 遍历文件夹下所有文件：for;os.listdir
+    \pause
+    \item 判断文件是不是需要筛选出来：if;in
+    \pause
+    \item 把文件移动到新文件夹下：os.path.join;os.rename
+   \end{itemize}
+  \item<3-> 实例：selectPassPDF.py
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{批量筛选已处理PDF}
+\begin{itemize}
+  \item<1-> 目标：把已处理PDF（即有对应txt文件的PDF）取出。
+  \item<2-> 思路：
+  \pause
+  \begin{itemize}
+    \item 创建新文件夹：if;os.path.exists;os.mkdir
+    \pause
+    \item 遍历TXT文件夹下所有文件：for;os.listdir
+    \pause
+    \item 判断对应PDF文件是否已经被筛选：str.replace;if;in
+    \pause
+    \item 把PDF文件移动到新文件夹下：os.path.join;os.rename
+   \end{itemize}
+  \item<3-> 实例：selectPassPDF.py
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{批量提取文件内容}
+\begin{itemize}
+  \item<1-> 目标：批量提取原始文件名中的URL。
+  \item<2-> 思路：
+  \pause
+  \begin{itemize}
+    \item 打开文件：open
+    \pause
+    \item 读入文件内容：file.readlines()
+    \pause
+    \item 从每行提取URL：str.split
+    \pause
+    \item 写入新文件：open; file.write
+   \end{itemize}
+  \item<3-> 实例：urlsort.py
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{批量重命名PDF}
+\begin{itemize}
+  \item<1-> 目标：批量重命名用迅雷下载下来的PDF。
+  \item<2-> 思路：
+  \begin{itemize}
+    \pause
+    \item 遍历文件夹下所有文件：for;os.listdir
+    \pause
+    \item 生成新旧文件名
+    
+    \begin{itemize}
+      \pause
+      \item 读取文件信息
+      \pause
+      \item 切割每行字符串
+      \pause
+      \item 提取新旧文件名
+    \end{itemize}
+    \pause
+    \item 把旧文件名重命名成新文件名：os.path.join;os.rename
+   \end{itemize}
+  \item<3-> 实例：rename.py
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{更多}
+\begin{itemize}
+\item<1-> 从网站上批量下载PDF：爬虫
+\item<2-> 检查TXT文件编码：文件编码
+\item<3-> 统计TXT文件：正则表达式
+\item ……
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{作业}
+\begin{itemize}
+  \item 实例3-4 基础
+  \item 实例5-6 选做
+\end{itemize}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{}
+
+% You can create overlays
+% \begin{itemize}
+%   \item using the \texttt{pause} command:
+%   \begin{itemize}
+%     \item First item.
+%     \pause
+%     \item Second item.
+%   \end{itemize}
+%   \item using overlay specifications:
+%   \begin{itemize}
+%     \item<3-> First item.
+%     \item<4-> Second item.
+%   \end{itemize}
+%   \item using the general \texttt{uncover} command:
+%   \begin{itemize}
+%     \uncover<5->{\item First item.}
+%     \uncover<6->{\item Second item.}
+%   \end{itemize}
+% \end{itemize}
+% \end{frame}
+% 
+% \section*{Summary}
+% 
+% \begin{frame}
+% \frametitle<presentation>{Summary}
+% 
+% \begin{itemize}
+%   \item The \alert{first main message} of your talk in one or two lines.
+% \end{itemize}
+% 
+% % The following outlook is optional.
+% \vskip0pt plus.5fill
+% \begin{itemize}
+%   \item Outlook
+%   \begin{itemize}
+%     \item Something you haven't solved.
+%     \item Something else you haven't solved.
+%   \end{itemize}
+% \end{itemize}
+% \end{frame}
+
+\end{document}
